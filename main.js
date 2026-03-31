@@ -1,137 +1,61 @@
-const container = document.getElementById("usersContainer");
+// Get HTML elements
+const userContainer = document.getElementById("userContainer");
 const searchInput = document.getElementById("search");
-const errorDiv = document.getElementById("error");
 
-let allUsers = [];
+let users = [];
 
-// Fetch all users
-async function fetchUsers(){
-
-  try{
-
-    const response = await fetch("https://jsonplaceholder.typicode.com/users")
-
-    if(!response.ok){
-      throw new Error("Failed to fetch users")
+// Fetch users from API
+async function fetchUsers() {
+    try {
+        const response = await fetch("https://jsonplaceholder.typicode.com/users");
+        users = await response.json();
+        displayUsers(users);
+    } catch (error) {
+        console.error("Error fetching users:", error);
     }
-
-    const users = await response.json()
-
-    allUsers = users
-
-    displayUsers(users)
-
-  }catch(error){
-
-    showError(error.message)
-
-  }
-
 }
-
-
-// Fetch posts
-async function fetchPosts(){
-
-  const response = await fetch("https://jsonplaceholder.typicode.com/users/1/posts")
-
-  const posts = await response.json()
-
-  console.log("Posts:",posts)
-
-}
-
-
-// Create post
-async function createPost(){
-
-  const response = await fetch("https://jsonplaceholder.typicode.com/posts",{
-
-    method:"POST",
-
-    headers:{
-      "Content-Type":"application/json"
-    },
-
-    body:JSON.stringify({
-      title:"My First Post",
-      body:"This is my post content",
-      userId:1
-    })
-
-  })
-
-  const data = await response.json()
-
-  console.log("Created Post:",data)
-
-}
-
 
 // Display users
-function displayUsers(users){
+function displayUsers(userList) {
 
-  container.innerHTML = users.map(user=>`
+    userContainer.innerHTML = "";
 
-    <div class="user-card">
+    userList.forEach(function(user) {
 
-      <h3>${user.name}</h3>
+        const card = document.createElement("div");
+        card.classList.add("user-card");
 
-      <p>Email: ${user.email}</p>
+        card.innerHTML = `
+            <h3>${user.name}</h3>
+            <p>Email: ${user.email}</p>
+            <p>Company: ${user.company.name}</p>
+            <p>City: ${user.address.city}</p>
+        `;
 
-      <p>Company: ${user.company.name}</p>
+        userContainer.appendChild(card);
 
-      <p>City: ${user.address.city}</p>
-
-    </div>
-
-  `).join("")
-
+    });
 }
-
 
 // Search users
-
-  const searchInput = document.getElementById("search");
-
 searchInput.addEventListener("keyup", function () {
+
     const searchValue = searchInput.value.toLowerCase();
 
-    const cards = document.querySelectorAll(".user-card");
+    const filteredUsers = users.filter(function(user){
 
-    cards.forEach(function(card) {
-        const text = card.innerText.toLowerCase();
+        return (
+            user.name.toLowerCase().includes(searchValue) ||
+            user.email.toLowerCase().includes(searchValue) ||
+            user.company.name.toLowerCase().includes(searchValue) ||
+            user.address.city.toLowerCase().includes(searchValue)
+        );
 
-        if (text.includes(searchValue)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
     });
+
+    displayUsers(filteredUsers);
+
 });
 
-  displayUsers(filtered)
-
-})
-
-
-// Show error
-function showError(message){
-
-  errorDiv.textContent = "Error: "+message
-
-}
-
-
-// Initialize
-async function init(){
-
-  await fetchUsers()
-
-  await fetchPosts()
-
-  await createPost()
-
-}
-
-init()
+// Run when page loads
+fetchUsers();
