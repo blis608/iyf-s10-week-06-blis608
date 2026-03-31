@@ -91,16 +91,24 @@ function displayUsers(users){
 
 
 // Search users
-searchInput.addEventListener("input",(e)=>{
 
-  const query = e.target.value.toLowerCase()
+  const searchInput = document.getElementById("search");
 
-  const filtered = allUsers.filter(user =>
+searchInput.addEventListener("keyup", function () {
+    const searchValue = searchInput.value.toLowerCase();
 
-    user.name.toLowerCase().includes(query) ||
-    user.email.toLowerCase().includes(query)
+    const cards = document.querySelectorAll(".user-card");
 
-  )
+    cards.forEach(function(card) {
+        const text = card.innerText.toLowerCase();
+
+        if (text.includes(searchValue)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+});
 
   displayUsers(filtered)
 
