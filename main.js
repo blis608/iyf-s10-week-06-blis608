@@ -1,6 +1,6 @@
-// ===============================
+// =======================================
 // Task 11.1 – Understanding Async
-// ===============================
+// =======================================
 
 // Synchronous example
 console.log("1 - Start");
@@ -16,8 +16,7 @@ setTimeout(() => {
 
 console.log("3 - End");
 
-
-// Predict the Output
+// Predict the output example
 console.log("A");
 
 setTimeout(() => console.log("B"), 0);
@@ -29,9 +28,9 @@ setTimeout(() => console.log("D"), 100);
 console.log("E");
 
 
-// ===============================
-// Exercise 2 – Callback Pattern
-// ===============================
+// =======================================
+// Callback Pattern
+// =======================================
 
 function fetchData(callback) {
   setTimeout(() => {
@@ -45,14 +44,10 @@ fetchData(function(data) {
 });
 
 
-// Build loadUser function
+// Simulate loading a user
 function loadUser(userId, callback) {
   setTimeout(() => {
-    const user = {
-      id: userId,
-      name: "John"
-    };
-
+    const user = { id: userId, name: "John" };
     callback(user);
   }, 1500);
 }
@@ -62,9 +57,9 @@ loadUser(1, function(user) {
 });
 
 
-// ===============================
+// =======================================
 // Task 11.2 – Callback Hell
-// ===============================
+// =======================================
 
 function getUserData(userId, callback) {
   setTimeout(() => {
@@ -90,7 +85,7 @@ function getPostComments(postId, callback) {
   }, 1000);
 }
 
-// Callback Hell Example
+// Callback Hell example
 getUserData(1, function(user) {
   console.log("User:", user);
 
@@ -104,9 +99,9 @@ getUserData(1, function(user) {
 });
 
 
-// ===============================
+// =======================================
 // Promises
-// ===============================
+// =======================================
 
 const myPromise = new Promise((resolve, reject) => {
   const success = true;
@@ -129,9 +124,9 @@ myPromise
   });
 
 
-// ===============================
-// Refactor to Promises
-// ===============================
+// =======================================
+// Promise Versions of Functions
+// =======================================
 
 function getUserDataPromise(userId) {
   return new Promise((resolve, reject) => {
@@ -146,7 +141,7 @@ function getUserDataPromise(userId) {
 }
 
 function getUserPostsPromise(userId) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(() => {
       resolve([
         { id: 1, title: "Post 1" },
@@ -157,7 +152,7 @@ function getUserPostsPromise(userId) {
 }
 
 function getPostCommentsPromise(postId) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(() => {
       resolve([
         { id: 1, text: "Great post!" },
@@ -168,9 +163,9 @@ function getPostCommentsPromise(postId) {
 }
 
 
-// ===============================
+// =======================================
 // Task 11.3 – Promise Chaining
-// ===============================
+// =======================================
 
 getUserDataPromise(1)
   .then(user => {
@@ -187,3 +182,96 @@ getUserDataPromise(1)
   .catch(error => {
     console.error("Error:", error);
   });
+
+
+// =======================================
+// Async / Await Version
+// =======================================
+
+async function getDataWithAsync() {
+  const user = await getUserDataPromise(1);
+  const posts = await getUserPostsPromise(user.id);
+  const comments = await getPostCommentsPromise(posts[0].id);
+
+  return comments;
+}
+
+getDataWithAsync().then(comments => {
+  console.log("Comments from async/await:", comments);
+});
+
+
+// =======================================
+// Error Handling with Try/Catch
+// =======================================
+
+async function fetchUserData(userId) {
+  try {
+    const user = await getUserDataPromise(userId);
+    const posts = await getUserPostsPromise(user.id);
+
+    return { user, posts };
+
+  } catch (error) {
+    console.error("Failed to fetch:", error);
+  }
+}
+
+fetchUserData(1).then(data => {
+  console.log("User Data:", data);
+});
+
+
+// =======================================
+// Parallel Requests with Promise.all
+// =======================================
+
+async function getAllUsers() {
+
+  const [u1, u2, u3] = await Promise.all([
+    getUserDataPromise(1),
+    getUserDataPromise(2),
+    getUserDataPromise(3)
+  ]);
+
+  console.log("All users:", [u1, u2, u3]);
+
+  return [u1, u2, u3];
+}
+
+getAllUsers();
+
+
+// =======================================
+// Promise.race Example
+// =======================================
+
+const fast = new Promise(resolve =>
+  setTimeout(() => resolve("Fast!"), 100)
+);
+
+const slow = new Promise(resolve =>
+  setTimeout(() => resolve("Slow!"), 500)
+);
+
+Promise.race([fast, slow])
+  .then(result => {
+    console.log("Winner:", result);
+  });
+
+
+// =======================================
+// Final Build Task – Fetch 3 Users
+// =======================================
+
+async function fetchThreeUsers() {
+  const users = await Promise.all([
+    getUserDataPromise(1),
+    getUserDataPromise(2),
+    getUserDataPromise(3)
+  ]);
+
+  console.log("Fetched 3 users:", users);
+}
+
+fetchThreeUsers();
