@@ -19,11 +19,11 @@ function displayUsers(userList) {
     card.classList.add("user-card");
 
     card.innerHTML = `
-      <h3>${user.name}</h3>
-      <p>Email: ${user.email}</p>
-      <p>Company: ${user.company.name}</p>
-      <p>City: ${user.address.city}</p>
-    `;
+<h3>${user.name}</h3>
+<p>Email: ${user.email}</p>
+<p>Company: ${user.company.name}</p>
+<p>City: ${user.address.city}</p>
+`;
 
     userContainer.appendChild(card);
 
